@@ -153,11 +153,18 @@ class Scheme(object):
         Connects to the network as configured in this scheme.
         """
 
-        subprocess.check_output(['/sbin/ifdown', self.interface], stderr=subprocess.STDOUT)
+        self.deactivate()
         ifup_output = subprocess.check_output(['/sbin/ifup'] + self.as_args(), stderr=subprocess.STDOUT)
         ifup_output = ifup_output.decode('utf-8')
 
         return self.parse_ifup_output(ifup_output)
+
+    def deactivate(self):
+        """
+        Disconnects from the network as configured in this scheme.
+        """
+
+        subprocess.check_output(['/sbin/ifdown', self.interface], stderr=subprocess.STDOUT)
 
     def parse_ifup_output(self, output):
         if self.type == "dhcp":
