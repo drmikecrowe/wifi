@@ -60,9 +60,10 @@ class Scheme(object):
             'interfaces': interfaces,
         })
 
-    def __init__(self, interface, name, options=None):
+    def __init__(self, interface, name, type="dhcp", options=None):
         self.interface = interface
         self.name = name
+        self.type = type
         self.options = options or {}
 
     def __str__(self):
@@ -70,7 +71,7 @@ class Scheme(object):
         Returns the representation of a scheme that you would need
         in the /etc/network/interfaces file.
         """
-        iface = "iface {interface}-{name} inet dhcp".format(**vars(self))
+        iface = "iface {interface}-{name} inet {type}".format(**vars(self))
         options = ''.join("\n    {k} {v}".format(k=k, v=v) for k, v in self.options.items())
         return iface + options + '\n'
 
@@ -123,7 +124,7 @@ class Scheme(object):
         """
         Deletes the configuration from the :attr:`interfaces` file.
         """
-        iface = "iface %s-%s inet dhcp" % (self.interface, self.name)
+        iface = "iface %s-%s inet %s" % (self.interface, self.name, self.type)
         content = ''
         with open(self.interfaces, 'r') as f:
             skip = False
@@ -159,11 +160,14 @@ class Scheme(object):
         return self.parse_ifup_output(ifup_output)
 
     def parse_ifup_output(self, output):
-        matches = bound_ip_re.search(output)
-        if matches:
-            return Connection(scheme=self, ip_address=matches.group('ip_address'))
+        if self.type == "dhcp":
+            matches = bound_ip_re.search(output)
+            if matches:
+                return Connection(scheme=self, ip_address=matches.group('ip_address'))
+            else:
+                raise ConnectionError("Failed to connect to %r" % self)
         else:
-            raise ConnectionError("Failed to connect to %r" % self)
+            return Connection(scheme=self, ip_address=self.options["address"][0])
 
 
 class Connection(object):
@@ -176,7 +180,7 @@ class Connection(object):
 
 
 # TODO: support other interfaces
-scheme_re = re.compile(r'iface\s+(?P<interface>wlan\d?)(?:-(?P<name>\w+))?')
+scheme_re = re.compile(r'iface\s+(?P<interface>wlan\d?)(?:-(?P<name>\w+))?\s+inet\s+(?P<type>\w+)')
 
 
 def extract_schemes(interfaces, scheme_class=Scheme):
@@ -190,7 +194,7 @@ def extract_schemes(interfaces, scheme_class=Scheme):
         match = scheme_re.match(line)
         if match:
             options = {}
-            interface, scheme = match.groups()
+            interface, scheme, type = match.groups()
 
             if not scheme or not interface:
                 continue
@@ -199,6 +203,6 @@ def extract_schemes(interfaces, scheme_class=Scheme):
                 key, value = re.sub(r'\s{2,}', ' ', lines.pop(0).strip()).split(' ', 1)
                 options[key] = value
 
-            scheme = scheme_class(interface, scheme, options)
+            scheme = scheme_class(interface, scheme, type=type, options=options)
 
             yield scheme
