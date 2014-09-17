@@ -115,11 +115,15 @@ class Scheme(object):
         """
         return cls(interface, name, options=configuration(cell, passkey))
 
-    def save(self):
+    def save(self, allow_overwrite=False):
         """
         Writes the configuration to the :attr:`interfaces` file.
         """
-        assert not self.find(self.interface, self.name), "This scheme already exists"
+        existing_scheme = self.find(self.interface, self.name)
+        if existing_scheme:
+            if not allow_overwrite:
+                raise RuntimeError("Scheme for interface %s named %s already exists and overwrite is forbidden" % (self.interface, self.name))
+            existing_scheme.delete()
 
         with open(self.interfaces, 'a') as f:
             f.write('\n')
