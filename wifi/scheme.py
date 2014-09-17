@@ -64,6 +64,11 @@ class Scheme(object):
         self.interface = interface
         self.name = name
         self.type = type
+
+        if options:
+            for k, v in options.items():
+                if not isinstance(v, (list, tuple)):
+                    options[k] = [v]
         self.options = options or {}
 
     def __str__(self):
@@ -72,7 +77,7 @@ class Scheme(object):
         in the /etc/network/interfaces file.
         """
         iface = "iface {interface}-{name} inet {type}".format(**vars(self))
-        options = ''.join("\n    {k} {v}".format(k=k, v=v) for k, v in self.options.items())
+        options = ''.join("\n    {k} {v}".format(k=k, v=v) for k in self.options.keys() for v in self.options[k])
         return iface + options + '\n'
 
     def __repr__(self):
@@ -108,7 +113,7 @@ class Scheme(object):
         Intuits the configuration needed for a specific
         :class:`Cell` and creates a :class:`Scheme` for it.
         """
-        return cls(interface, name, configuration(cell, passkey))
+        return cls(interface, name, options=configuration(cell, passkey))
 
     def save(self):
         """
@@ -144,7 +149,7 @@ class Scheme(object):
 
     def as_args(self):
         args = list(itertools.chain.from_iterable(
-            ('-o', '{k}={v}'.format(k=k, v=v)) for k, v in self.options.items()))
+            ('-o', '{k}={v}'.format(k=k, v=v)) for k in self.options.keys() for v in self.options[k]))
 
         return [self.interface + '=' + self.iface] + args
 
@@ -208,7 +213,9 @@ def extract_schemes(interfaces, scheme_class=Scheme):
 
             while lines and lines[0].startswith(' '):
                 key, value = re.sub(r'\s{2,}', ' ', lines.pop(0).strip()).split(' ', 1)
-                options[key] = value
+                if not key in options:
+                    options[key] = []
+                options[key].append(value)
 
             scheme = scheme_class(interface, scheme, type=type, options=options)
 
