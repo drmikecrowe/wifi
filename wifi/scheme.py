@@ -140,7 +140,7 @@ class Scheme(object):
             for line in f:
                 if not line.strip():
                     skip = False
-                elif line.strip() == iface:
+                elif line.strip().startswith(iface):
                     skip = True
                 if not skip:
                     content += line
