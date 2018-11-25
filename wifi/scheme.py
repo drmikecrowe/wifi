@@ -25,11 +25,11 @@ def configuration(cell, passkey=None):
                 passkey = PBKDF2(passkey, cell.ssid, 4096).hexread(32)
 
             return {
-                'wpa-ssid': cell.ssid,
-                'ssid=': cell.ssid,
-                'wpa-psk': passkey,
-                'psk=': passkey,
-                'wireless-channel': 'auto',
+                #'wpa-ssid': cell.ssid,
+                'ssid=':'"'+cell.ssid+'"',
+                #'wpa-psk': passkey,
+                'psk=':passkey,
+                #'wireless-channel': 'auto',
             }
         elif cell.encryption_type == 'wep':
             # Pass key lengths in bytes for WEP depend on type of key and key length:
@@ -67,7 +67,7 @@ class Scheme(object):
     file.
     """
 
-    interfaces = '/etc/network/interfaces'
+    interfaces = '/etc/wpa_supplicant/wpa_supplicant.conf'
 
     @classmethod
     def for_file(cls, interfaces):
@@ -98,9 +98,9 @@ class Scheme(object):
         Returns the representation of a scheme that you would need
         in the /etc/network/interfaces file.
         """
-        iface = "network={{\n    id_str=\"{interface}-{name}\""
+        iface = "network={\n    id_str=\"wlan0-netconnectd_wifi\""
         options = ''.join("\n    {k} {v}".format(k=k, v=v) for k in self.options.keys() for v in self.options[k])
-        return iface + options + '}}' + '\n'
+        return iface + options + '}' + '\n'
 
     def __repr__(self):
         return 'Scheme(interface={interface!r}, name={name!r}, options={options!r}'.format(**vars(self))
@@ -155,7 +155,7 @@ class Scheme(object):
         """
         Deletes the configuration from the :attr:`interfaces` file.
         """
-        iface = "iface %s-%s inet %s" % (self.interface, self.name, self.type)
+        iface = "network={"
         content = ''
         with open(self.interfaces, 'r') as f:
             skip = False
