@@ -62,11 +62,18 @@ class Hostapd(object):
         if self.psk is not None:
             # parameters for encryption via WPA
             conf += [
-                "wpa=3",
+                "wpa=2",
                 "wpa_passphrase={psk}",
                 "wpa_key_mgmt=WPA-PSK",
                 "wpa_pairwise=TKIP CCMP",
-                "rsn_pairwise=CCMP"
+                "rsn_pairwise=CCMP",
+                "hw_mode=g",
+                "macaddr_acl=0",
+                "auth_algs=1",
+                "ignore_broadcast_ssid=1",
+                "ieee80211n=1",
+                "wmm_enabled=1",
+                "ht_capab=[HT40][SHORT-GI-20][DSSS_CCK-40]"
             ]
 
         if self.options:
@@ -615,9 +622,9 @@ class AccessPoint(object):
         # create a scheme with static configuration, given ip and netmask -- those parameters will be ruthlessly
         # overridden if they were already present in the supplied scheme_options
         scheme_options.update(dict(
-            address=[ip],
-            netmask=[str(network_address.netmask)],
-            broadcast=[str(network_address.broadcast)]
+        #    address=[ip],
+        #    netmask=[str(network_address.netmask)],
+        #    broadcast=[str(network_address.broadcast)]
         ))
 
         if forwarding_to is not None:
@@ -677,7 +684,7 @@ class AccessPoint(object):
 
         self.hostapd.save(allow_overwrite=allow_overwrite)
         self.dnsmasq.save(allow_overwrite=allow_overwrite)
-        self.scheme.save(allow_overwrite=allow_overwrite)
+        #self.scheme.save(allow_overwrite=allow_overwrite)
 
     def delete(self):
         """ Deletes all wrapped configurations. """
