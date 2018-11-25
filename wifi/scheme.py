@@ -186,7 +186,7 @@ class Scheme(object):
 
         self.deactivate()
         try:
-            ifup_output = subprocess.check_output(['/sbin/ifup'] + self.as_args(), stderr=subprocess.STDOUT)
+            ifup_output = subprocess.check_output(['/sbin/ifconfig', ' wlan0 up'], stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
             self.logger.exception("Error while trying to connect to %s" % self.iface)
             self.logger.error("Output: %s" % e.output)
@@ -200,7 +200,7 @@ class Scheme(object):
         Disconnects from the network as configured in this scheme.
         """
 
-        subprocess.check_output(['/sbin/ifdown', self.interface], stderr=subprocess.STDOUT)
+        subprocess.check_output(['/sbin/ifconfig', ' wlan0 down'], stderr=subprocess.STDOUT)
 
     def parse_ifup_output(self, output):
         if self.type == "dhcp":
