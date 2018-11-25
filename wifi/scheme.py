@@ -98,9 +98,9 @@ class Scheme(object):
         Returns the representation of a scheme that you would need
         in the /etc/network/interfaces file.
         """
-        iface = "network={\n    id_str=\"wlan0-netconnectd_wifi\""
+        iface = "ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\nupdate_config=1\n\nnetwork={"
         options = ''.join("\n    {k} {v}".format(k=k, v=v) for k in self.options.keys() for v in self.options[k])
-        return iface + options + '}' + '\n'
+        return iface + options + '\n' + '}' + '\n'
 
     def __repr__(self):
         return 'Scheme(interface={interface!r}, name={name!r}, options={options!r}'.format(**vars(self))
@@ -147,7 +147,7 @@ class Scheme(object):
                 raise RuntimeError("Scheme for interface %s named %s already exists and overwrite is forbidden" % (self.interface, self.name))
             existing_scheme.delete()
 
-        with open(self.interfaces, 'a') as f:
+        with open(self.interfaces, 'w') as f:
             f.write('\n')
             f.write(str(self))
 
