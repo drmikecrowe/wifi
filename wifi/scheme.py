@@ -26,7 +26,9 @@ def configuration(cell, passkey=None):
 
             return {
                 'wpa-ssid': cell.ssid,
+                'ssid=': cell.ssid,
                 'wpa-psk': passkey,
+                'psk=': passkey,
                 'wireless-channel': 'auto',
             }
         elif cell.encryption_type == 'wep':
@@ -96,9 +98,9 @@ class Scheme(object):
         Returns the representation of a scheme that you would need
         in the /etc/network/interfaces file.
         """
-        iface = "iface {interface}-{name} inet {type}".format(**vars(self))
+        iface = "network={{\n    id_str=\"{interface}-{name}\""
         options = ''.join("\n    {k} {v}".format(k=k, v=v) for k in self.options.keys() for v in self.options[k])
-        return iface + options + '\n'
+        return iface + options + '}}' + '\n'
 
     def __repr__(self):
         return 'Scheme(interface={interface!r}, name={name!r}, options={options!r}'.format(**vars(self))
