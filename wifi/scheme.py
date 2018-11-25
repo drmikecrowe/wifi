@@ -99,7 +99,7 @@ class Scheme(object):
         in the /etc/network/interfaces file.
         """
         iface = "ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\nupdate_config=1\n\nnetwork={"
-        options = ''.join("\n    {k} {v}".format(k=k, v=v) for k in self.options.keys() for v in self.options[k])
+        options = ''.join("\n    {k}{v}".format(k=k, v=v) for k in self.options.keys() for v in self.options[k])
         return iface + options + '\n' + '}' + '\n'
 
     def __repr__(self):
