@@ -210,7 +210,12 @@ class Scheme(object):
             else:
                 raise ConnectionError("Failed to connect to %r" % self)
         else:
-            return Connection(scheme=self, ip_address=self.options["address"][0])
+            #return Connection(scheme=self, ip_address=self.options["address"][0])
+            matches = bound_ip_re.search(output)
+            if matches:
+                return Connection(scheme=self, ip_address=matches.group('ip_address'))
+            else:
+                raise ConnectionError("Failed to connect to %r" % self)
 
 
 class Connection(object):
