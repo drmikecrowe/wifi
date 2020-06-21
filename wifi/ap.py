@@ -70,7 +70,7 @@ class Hostapd(object):
                 "hw_mode=g",
                 "macaddr_acl=0",
                 "auth_algs=1",
-                "ignore_broadcast_ssid=0",
+                "ignore_broadcast_ssid=1",
                 "ieee80211n=1",
                 "wmm_enabled=1",
                 "ht_capab=[HT40][SHORT-GI-20][DSSS_CCK-40]"
