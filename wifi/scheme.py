@@ -185,6 +185,7 @@ class Scheme(object):
         """
 
         self.deactivate()
+        subprocess.check_call(['/sbin/wpacli', '-i', 'wlan0', 'reconfigure'], stderr=subprocess.STDOUT)
         try:
             ifup_output = subprocess.check_output(['/sbin/ifconfig', 'wlan0', 'up'], stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
@@ -192,7 +193,6 @@ class Scheme(object):
             self.logger.error("Output: %s" % e.output)
             raise InterfaceError("Failed to connect to %r: %s" % (self, e.message))
         ifup_output = ifup_output.decode('utf-8')
-		subprocess.check_call(['/sbin/wpacli', '-i', 'wlan0', 'reconfigure'], stderr=subprocess.STDOUT)
 
         return self.parse_ifup_output(ifup_output)
 
