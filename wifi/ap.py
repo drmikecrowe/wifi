@@ -622,9 +622,9 @@ class AccessPoint(object):
         # create a scheme with static configuration, given ip and netmask -- those parameters will be ruthlessly
         # overridden if they were already present in the supplied scheme_options
         scheme_options.update(dict(
-        #    address=[ip],
-        #    netmask=[str(network_address.netmask)],
-        #    broadcast=[str(network_address.broadcast)]
+            address=[ip],
+            netmask=[str(network_address.netmask)],
+            broadcast=[str(network_address.broadcast)]
         ))
 
         if forwarding_to is not None:
