@@ -192,6 +192,7 @@ class Scheme(object):
             self.logger.error("Output: %s" % e.output)
             raise InterfaceError("Failed to connect to %r: %s" % (self, e.message))
         ifup_output = ifup_output.decode('utf-8')
+		subprocess.check_call(['/sbin/wpacli', '-i', 'wlan0', 'reconfigure'], stderr=subprocess.STDOUT)
 
         return self.parse_ifup_output(ifup_output)
 

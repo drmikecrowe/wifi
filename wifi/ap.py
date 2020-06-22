@@ -62,18 +62,16 @@ class Hostapd(object):
         if self.psk is not None:
             # parameters for encryption via WPA
             conf += [
-                "wpa=2",
+                "country_code=TR",
+                "wpa=3",
                 "wpa_passphrase={psk}",
                 "wpa_key_mgmt=WPA-PSK",
-                "wpa_pairwise=TKIP CCMP",
-                "rsn_pairwise=CCMP",
-                "hw_mode=g",
-                "macaddr_acl=0",
-                "auth_algs=1",
-                "ignore_broadcast_ssid=1",
-                "ieee80211n=1",
-                "wmm_enabled=1",
-                "ht_capab=[HT40][SHORT-GI-20][DSSS_CCK-40]"
+                "wpa_pairwise=TKIP",
+                "rsn_pairwise=CCMP"
+                #"hw_mode=g",
+                #"macaddr_acl=0",
+                #"auth_algs=1",
+                #"ignore_broadcast_ssid=0"
             ]
 
         if self.options:
@@ -387,7 +385,8 @@ class Dnsmasq(object):
         conf = [
             "interface={interface}",
             "bind-interfaces",
-            "dhcp-range={start},{end},{lease_time}"
+            "dhcp-range={start},{end},{lease_time}",
+			"address=/rigid3d.wifi/10.250.250.1"
         ]
 
         # if a local domain is configured, add the corresponding configuration lines
