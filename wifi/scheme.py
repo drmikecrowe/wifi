@@ -185,7 +185,7 @@ class Scheme(object):
         """
 
         self.deactivate()
-        subprocess.check_call(['/sbin/wpacli', '-i', 'wlan0', 'reconfigure'], stderr=subprocess.STDOUT)
+        subprocess.check_call(['/sbin/wpa_cli', '-i', 'wlan0', 'reconfigure'], stderr=subprocess.STDOUT)
         try:
             ifup_output = subprocess.check_output(['/sbin/ifconfig', 'wlan0', 'up'], stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
