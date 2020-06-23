@@ -105,7 +105,7 @@ class Hostapd(object):
 
     def activate(self):
         try:
-            output = subprocess.check_output([self.__class__.hostapd, "-dd", "-B", self.configfile], stderr=subprocess.STDOUT)
+            output = subprocess.check_output(['sudo', self.__class__.hostapd, "-dd", "-B", self.configfile], stderr=subprocess.STDOUT)
             self._logger.info("Started hostapd: {output}".format(output=output))
             return True
         except subprocess.CalledProcessError as e:
@@ -116,7 +116,7 @@ class Hostapd(object):
         pid = self.get_pid()
         if pid is None:
             return
-        subprocess.check_call(["kill", pid])
+        subprocess.check_call(['sudo', 'kill', pid])
 
     def get_pid(self):
         pids = [pid for pid in os.listdir("/proc") if pid.isdigit()]
@@ -448,7 +448,7 @@ class Dnsmasq(object):
         """ Activates this config. """
 
         try:
-            output = subprocess.check_output([self.__class__.dnsmasq, "--conf-file={file}".format(file=self.configfile)], stderr=subprocess.STDOUT)
+            output = subprocess.check_output(['sudo', self.__class__.dnsmasq, "--conf-file={file}".format(file=self.configfile)], stderr=subprocess.STDOUT)
             self._logger.info("Started dnsmasq: {output}".format(output=output))
         except subprocess.CalledProcessError as e:
             self._logger.warn("Error while starting dnsmasq: {output}".format(output=e.output))
@@ -460,7 +460,7 @@ class Dnsmasq(object):
         pid = self.get_pid()
         if pid is None:
             return
-        subprocess.check_call(["kill", pid])
+        subprocess.check_call(['sudo', 'kill', pid])
 
     def get_pid(self):
         """ Get's the pid of the dnsmasq process running this config, or None if not currently running. """
