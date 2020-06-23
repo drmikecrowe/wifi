@@ -695,9 +695,10 @@ class AccessPoint(object):
     def activate(self):
         """ Activates the access point by activating all wrapped configurations. """
 
-        self.hostapd.activate()
-        self.scheme.activate()
-        self.dnsmasq.activate()
+        a=0
+		#self.hostapd.activate()
+        #self.scheme.activate()
+        #self.dnsmasq.activate()
 
     def deactivate(self):
         """ Deactivates the access point by deactivating all wrapped configurations. """
